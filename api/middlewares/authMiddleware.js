@@ -17,8 +17,9 @@ exports.verifyToken = (req, res, next) => {
 };
 
 exports.verifyLandlordRole = (req, res, next) => {
-  if (req.user.role !== "landlord") {
-    return res.status(403).json({ message: "Доступ запрещен. Только арендодатели могут выполнять это действие." });
+  if (req.user.role !== "landlord" && req.user.role !== "admin") {
+    return res.status(403).json({ message: "Доступ запрещен. Только арендодатели или администраторы могут выполнять это действие." });
   }
+  
   next();
 };
