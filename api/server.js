@@ -3,6 +3,14 @@ const mysql = require("mysql2");
 const bodyParser = require("body-parser");
 const livereload = require("livereload");
 const connectLivereload = require("connect-livereload");
+const authRoutes = require('./routes/authRoutes');
+const db = require('./db'); // Подключаем файл с базой данных
+
+// Синхронизация базы данных
+db.sync({ alter: true })
+  .then(() => console.log('Database synced successfully'))
+  .catch(err => console.log('Error syncing database:', err));
+
 
 const app = express();
 app.use(bodyParser.json());
@@ -19,8 +27,13 @@ liveReloadServer.server.once("connection", () => {
   }, 100);
 });
 
+// Синхронизация базы данных
+db.sync()
+  .then(() => console.log('Database synced successfully'))
+  .catch(err => console.log('Error syncing database:', err));
+
 // Параметры подключения к базе данных MySQL
-const db = mysql.createConnection({
+const mysqlConnection = mysql.createConnection({
   host: "127.0.0.1",
   user: "root",
   password: "root",
@@ -28,16 +41,19 @@ const db = mysql.createConnection({
   port: 8889
 });
 
-db.connect((err) => {
+mysqlConnection.connect((err) => {
   if (err) {
-    console.error("Ошибка подключения к базе данных:", err);
+    console.error("Ошибка подключения к базе данных MySQL:", err);
     return;
   }
-  console.log("Успешное подключение к базе данных!");
+  console.log("Успешное подключение к базе данных MySQL!");
 });
 
+// Подключаем маршруты для авторизации и регистрации
+app.use('/api/auth', authRoutes);
+
 app.get("/", (req, res) => {
-  res.send("Сервер работает!1212w33");
+  res.send("Сервер работает!");
 });
 
 const PORT = 3000;
