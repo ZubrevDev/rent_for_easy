@@ -4,12 +4,13 @@ const mysql = require("mysql2");
 const bodyParser = require("body-parser");
 const livereload = require("livereload");
 const connectLivereload = require("connect-livereload");
-const authRoutes = require('./routes/authRoutes');
-const apartmentRoutes = require('./routes/apartmentRoutes');
-const db = require('./db');
-
+const authRoutes = require("./routes/authRoutes");
+const apartmentRoutes = require("./routes/apartmentRoutes");
+const db = require("./db");
 const app = express();
+
 app.use(bodyParser.json());
+app.use("/api/apartments", apartmentRoutes);
 
 // Настройка LiveReload
 const liveReloadServer = livereload.createServer();
@@ -28,7 +29,7 @@ const mysqlConnection = mysql.createConnection({
   user: "root",
   password: "root",
   database: "rent_platform",
-  port: 8889
+  port: 8889,
 });
 
 mysqlConnection.connect((err) => {
@@ -40,8 +41,8 @@ mysqlConnection.connect((err) => {
 });
 
 // Подключаем маршруты для авторизации и квартир
-app.use('/api/auth', authRoutes);
-app.use('/api/apartments', apartmentRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/apartments", apartmentRoutes);
 
 // Маршрут для проверки работы сервера
 app.get("/", (req, res) => {

@@ -1,17 +1,23 @@
-
 // api/routes/apartmentRoutes.js
 const express = require("express");
-const apartmentController = require("../controllers/apartmentController");
-const authMiddleware = require("../middlewares/authMiddleware");
-
 const router = express.Router();
+const apartmentController = require("../controllers/apartmentController");
+const authMiddleware = require("../middlewares/authMiddleware"); // Импортируем миддлвар для авторизации
 
-// Маршруты для работы с квартирами
-console.log(apartmentController);
+// Добавление новой квартиры
+// Только авторизованный арендодатель может добавлять квартиру
+router.post("/", authMiddleware.verifyToken, authMiddleware.verifyLandlordRole, apartmentController.createApartment);
 
-router.post("/", authMiddleware.verifyToken, apartmentController.createApartment);
-router.get("/", authMiddleware.verifyToken, apartmentController.getApartmentsByLandlord);
-router.put("/:id", authMiddleware.verifyToken, apartmentController.updateApartment);
-router.delete("/:id", authMiddleware.verifyToken, apartmentController.deleteApartment);
+// Получение всех квартир текущего арендодателя
+// Только авторизованный арендодатель может видеть свои квартиры
+router.get("/", authMiddleware.verifyToken, authMiddleware.verifyLandlordRole, apartmentController.getApartmentsByLandlord);
+
+// Обновление информации о квартире
+// Только авторизованный арендодатель может обновлять информацию о квартире
+router.put("/:id", authMiddleware.verifyToken, authMiddleware.verifyLandlordRole, apartmentController.updateApartment);
+
+// Удаление квартиры
+// Только авторизованный арендодатель может удалять квартиру
+router.delete("/:id", authMiddleware.verifyToken, authMiddleware.verifyLandlordRole, apartmentController.deleteApartment);
 
 module.exports = router;
