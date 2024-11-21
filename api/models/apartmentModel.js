@@ -1,32 +1,29 @@
 // api/models/apartmentModel.js
-const db = require("../db");
+const { DataTypes } = require("sequelize");
+const sequelize = require("../db");
 
-// Создание новой квартиры
-exports.createApartment = (apartmentData, callback) => {
-  const { address, description, landlordId } = apartmentData;
-  db.query(
-    "INSERT INTO apartments (address, description, landlord_id) VALUES (?, ?, ?)",
-    [address, description, landlordId],
-    callback
-  );
-};
+// Определение модели Apartment с использованием Sequelize
+const Apartment = sequelize.define(
+  "apartment", // Имя модели (оно используется Sequelize для связи с таблицей)
+  {
+    address: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    description: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    landlord_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+  },
+  {
+    freezeTableName: true, // Имя таблицы будет таким же, как имя модели (в данном случае 'apartment')
+    tableName: "apartments", // Указываем точное имя таблицы в базе данных
+    timestamps: true, // Используем createdAt и updatedAt (если в таблице они существуют)
+  }
+);
 
-// Получение всех квартир арендодателя
-exports.getApartmentsByLandlord = (landlordId, callback) => {
-  db.query("SELECT * FROM apartments WHERE landlord_id = ?", [landlordId], callback);
-};
-
-// Обновление информации о квартире
-exports.updateApartment = (apartmentId, apartmentData, callback) => {
-  const { address, description } = apartmentData;
-  db.query(
-    "UPDATE apartments SET address = ?, description = ? WHERE id = ?",
-    [address, description, apartmentId],
-    callback
-  );
-};
-
-// Удаление квартиры
-exports.deleteApartment = (apartmentId, callback) => {
-  db.query("DELETE FROM apartments WHERE id = ?", [apartmentId], callback);
-};
+module.exports = Apartment;
