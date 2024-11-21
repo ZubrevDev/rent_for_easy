@@ -1,26 +1,17 @@
-const express = require('express');
-const {
-  getAllApartments,
-  getApartmentById,
-  createApartment,
-  updateApartment,
-  deleteApartment
-} = require('../controllers/apartmentController');
+
+// api/routes/apartmentRoutes.js
+const express = require("express");
+const apartmentController = require("../controllers/apartmentController");
+const authMiddleware = require("../middlewares/authMiddleware");
+
 const router = express.Router();
 
-// Маршрут для получения всех квартир
-router.get('/', getAllApartments);
+// Маршруты для работы с квартирами
+console.log(apartmentController);
 
-// Маршрут для получения квартиры по ID
-router.get('/:id', getApartmentById);
-
-// Маршрут для создания новой квартиры
-router.post('/', createApartment);
-
-// Маршрут для обновления информации о квартире
-router.put('/:id', updateApartment);
-
-// Маршрут для удаления квартиры
-router.delete('/:id', deleteApartment);
+router.post("/", authMiddleware.verifyToken, apartmentController.createApartment);
+router.get("/", authMiddleware.verifyToken, apartmentController.getApartmentsByLandlord);
+router.put("/:id", authMiddleware.verifyToken, apartmentController.updateApartment);
+router.delete("/:id", authMiddleware.verifyToken, apartmentController.deleteApartment);
 
 module.exports = router;
