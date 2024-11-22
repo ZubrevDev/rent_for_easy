@@ -1,39 +1,19 @@
 // controllers/contractController.js
-const { Contract, Apartment, User } = require("../associations");
+const { generateContract } = require('../services/contractService');
+const fs = require("fs");
 
-// Создание нового договора
+// Генерация и создание договора
 exports.createContract = async (req, res) => {
-  const { apartmentId, tenantId, startDate, endDate } = req.body;
-
-  if (!apartmentId || !tenantId || !startDate || !endDate) {
-    return res.status(400).json({ message: "Пожалуйста, заполните все обязательные поля." });
-  }
-
   try {
-    // Проверка наличия квартиры и арендатора
-    const apartment = await Apartment.findByPk(apartmentId);
-    const tenant = await User.findByPk(tenantId);
+    const { landlord, apartment, rentalCost, conditions, deposit, lastMonthPayment } = req.body;
+    const tenant = req.body.tenant || {};
 
-    if (!apartment) {
-      return res.status(404).json({ message: "Квартира не найдена." });
-    }
+    // Генерация договора
+    const contractPath = await generateContract({ landlord, tenant, apartment, rentalCost, conditions, deposit, lastMonthPayment });
 
-    if (!tenant || tenant.role !== 'tenant') {
-      return res.status(404).json({ message: "Арендатор не найден или не является арендатором." });
-    }
-
-    // Создание договора
-    const contract = await Contract.create({
-      start_date: startDate,
-      end_date: endDate,
-      status: "active",
-      tenant_id: tenantId,
-      apartment_id: apartmentId,
-    });
-
-    res.status(201).json({ message: "Договор успешно создан.", contract });
+    res.status(200).json({ message: "Договор успешно создан.", contractPath });
   } catch (err) {
     console.error("Ошибка при создании договора:", err);
-    res.status(500).json({ message: "Ошибка сервера. Пожалуйста, попробуйте позже." });
+    res.status(500).json({ message: "Ошибка сервера" });
   }
 };

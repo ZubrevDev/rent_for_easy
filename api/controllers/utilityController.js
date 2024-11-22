@@ -2,6 +2,7 @@
 const Utility = require('../models/utilityModel');
 const Apartment = require('../models/apartmentModel');
 const { Op } = require("sequelize");
+const { createNotification } = require('../services/notificationService');
 
 // Добавление данных по счетчику арендатором
 exports.addMeterReading = async (req, res) => {
@@ -22,6 +23,17 @@ exports.addMeterReading = async (req, res) => {
       date: new Date(),
       status: 'pending',
     });
+
+    // Создание уведомления для арендодателя
+    const apartment = await Apartment.findByPk(apartment_id, { include: [{ model: User, as: 'landlord' }] });
+    if (apartment && apartment.landlord) {
+      createNotification(
+        apartment.landlord.id,
+        'new_meter_reading',
+        `Арендатор добавил данные по счетчикам для квартиры по адресу: ${apartment.address}.`,
+        'email'
+      );
+    }
 
     res.status(201).json({ message: "Показания счетчика добавлены!", utility });
   } catch (err) {
