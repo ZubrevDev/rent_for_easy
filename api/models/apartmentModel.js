@@ -1,6 +1,6 @@
 // api/models/apartmentModel.js
 const { DataTypes } = require("sequelize");
-const sequelize = require("../db");
+const sequelize = require("../config/db");
 
 // Определение модели Apartment с использованием Sequelize
 const Apartment = sequelize.define(

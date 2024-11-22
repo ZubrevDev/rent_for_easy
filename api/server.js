@@ -6,7 +6,7 @@ const livereload = require("livereload");
 const connectLivereload = require("connect-livereload");
 const authRoutes = require("./routes/authRoutes");
 const apartmentRoutes = require("./routes/apartmentRoutes");
-const db = require("./db");
+const db = require("./config/db");
 const app = express();
 
 app.use(bodyParser.json());

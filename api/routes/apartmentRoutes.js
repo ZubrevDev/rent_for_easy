@@ -1,23 +1,44 @@
-// api/routes/apartmentRoutes.js
+// apartmentRoutes.js
 const express = require("express");
+const {
+  createApartment,
+  getApartmentsByLandlord,
+  updateApartment,
+  deleteApartment,
+} = require("../controllers/apartmentController");
+const { verifyToken, verifyRole } = require("../middlewares/authMiddleware");
+const { body } = require("express-validator");
+
 const router = express.Router();
-const apartmentController = require("../controllers/apartmentController");
-const authMiddleware = require("../middlewares/authMiddleware"); // Импортируем миддлвар для авторизации
 
-// Добавление новой квартиры
-// Только авторизованный арендодатель может добавлять квартиру
-router.post("/", authMiddleware.verifyToken, authMiddleware.verifyLandlordRole, apartmentController.createApartment);
+// Создание новой квартиры
+router.post(
+  "/create",
+  verifyToken,
+  verifyRole(["landlord", "admin"]),
+  [
+    body("address").notEmpty().withMessage("Адрес обязателен").isLength({ max: 255 }).withMessage("Адрес слишком длинный"),
+    body("description").notEmpty().withMessage("Описание обязательно").isLength({ max: 500 }).withMessage("Описание слишком длинное"),
+  ],
+  createApartment
+);
 
-// Получение всех квартир текущего арендодателя
-// Только авторизованный арендодатель может видеть свои квартиры
-router.get("/", authMiddleware.verifyToken, authMiddleware.verifyLandlordRole, apartmentController.getApartmentsByLandlord);
+// Получение всех квартир арендодателя
+router.get("/landlord", verifyToken, verifyRole(["landlord", "admin"]), getApartmentsByLandlord);
 
 // Обновление информации о квартире
-// Только авторизованный арендодатель может обновлять информацию о квартире
-router.put("/:id", authMiddleware.verifyToken, authMiddleware.verifyLandlordRole, apartmentController.updateApartment);
+router.put(
+  "/update/:id",
+  verifyToken,
+  verifyRole(["landlord", "admin"]),
+  [
+    body("address").notEmpty().withMessage("Адрес обязателен").isLength({ max: 255 }).withMessage("Адрес слишком длинный"),
+    body("description").notEmpty().withMessage("Описание обязательно").isLength({ max: 500 }).withMessage("Описание слишком длинное"),
+  ],
+  updateApartment
+);
 
 // Удаление квартиры
-// Только авторизованный арендодатель может удалять квартиру
-router.delete("/:id", authMiddleware.verifyToken, authMiddleware.verifyLandlordRole, apartmentController.deleteApartment);
+router.delete("/delete/:id", verifyToken, verifyRole(["landlord", "admin"]), deleteApartment);
 
 module.exports = router;
