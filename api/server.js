@@ -5,7 +5,7 @@ const bodyParser = require("body-parser");
 const livereload = require("livereload");
 const connectLivereload = require("connect-livereload");
 const authRoutes = require("./routes/authRoutes");
-const apartmentRoutes = require("./routes/apartmentRoutes");
+const apartmentRoutes = require('./routes/apartmentRoutes');
 const db = require("./config/db");
 const app = express();
 

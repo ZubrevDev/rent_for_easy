@@ -1,18 +1,20 @@
-// services/contractService.js
 const fs = require('fs');
 const path = require('path');
 const handlebars = require('handlebars');
-const { PDFDocument, StandardFonts, rgb } = require('pdf-lib');
+const { PDFDocument, rgb } = require('pdf-lib');
+const fontkit = require('fontkit'); 
 
-// Функция для создания договора на основе шаблона и данных
 exports.generateContract = async (contractData) => {
   const { landlord, tenant, apartment, rentalCost, conditions, deposit, lastMonthPayment } = contractData;
 
-  // Чтение шаблона
-  const templatePath = path.join(__dirname, "../templates", "contractTemplate.hbs");
+  const templatePath = path.join(__dirname, "../contract-templates", "contractTemplate.hbs");
+  const outputPath = path.join(__dirname, '../generated-contracts'); 
+  const fontPath = path.join(__dirname, '../fonts', 'Roboto-Regular.ttf'); 
+  if (!fs.existsSync(outputPath)) {
+    fs.mkdirSync(outputPath); 
+    
   const templateContent = fs.readFileSync(templatePath, "utf-8");
 
-  // Компиляция шаблона Handlebars
   const template = handlebars.compile(templateContent);
   const today = new Date();
   const compiledText = template({
@@ -36,14 +38,19 @@ exports.generateContract = async (contractData) => {
     conditions: conditions || "____________________________",
   });
 
-  // Создаем новый PDF документ с использованием pdf-lib
   const pdfDoc = await PDFDocument.create();
-  const timesRomanFont = await pdfDoc.embedFont(StandardFonts.TimesRoman);
+
+  // Регистрируем fontkit
+  pdfDoc.registerFontkit(fontkit);
+
+  // Встраиваем кастомный шрифт
+  const fontBytes = fs.readFileSync(fontPath);
+  const customFont = await pdfDoc.embedFont(fontBytes);
+
   const page = pdfDoc.addPage([600, 800]);
   const { height } = page.getSize();
   const fontSize = 12;
 
-  // Разделяем сгенерированный текст на строки и добавляем их на страницу
   const lines = compiledText.split('\n');
   let yPosition = height - 50;
   lines.forEach((line) => {
@@ -51,15 +58,14 @@ exports.generateContract = async (contractData) => {
       x: 50,
       y: yPosition,
       size: fontSize,
-      font: timesRomanFont,
+      font: customFont,
       color: rgb(0, 0, 0),
     });
     yPosition -= 20; // Смещение на новую строку
   });
 
-  // Сохранение документа
   const pdfBytes = await pdfDoc.save();
-  const filePath = path.join(__dirname, "../contracts", `contract_${tenant.fullName || "template"}.pdf`);
+  const filePath = path.join(outputPath, `contract_${tenant.fullName || "template"}.pdf`);
   fs.writeFileSync(filePath, pdfBytes);
 
   return filePath;

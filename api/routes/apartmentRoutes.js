@@ -1,4 +1,3 @@
-// apartmentRoutes.js
 const express = require("express");
 const {
   createApartment,
@@ -8,6 +7,7 @@ const {
 } = require("../controllers/apartmentController");
 const { verifyToken, verifyRole } = require("../middlewares/authMiddleware");
 const { body } = require("express-validator");
+const contractController = require('../controllers/contractController');
 
 const router = express.Router();
 
@@ -40,5 +40,13 @@ router.put(
 
 // Удаление квартиры
 router.delete("/delete/:id", verifyToken, verifyRole(["landlord", "admin"]), deleteApartment);
+
+// Новый маршрут для генерации договора
+router.post(
+  "/generate-contract",
+  verifyToken,
+  verifyRole(["landlord", "admin"]),
+  contractController.createContract
+);
 
 module.exports = router;
