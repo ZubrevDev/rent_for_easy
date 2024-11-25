@@ -12,6 +12,7 @@ exports.generateContract = async (contractData) => {
   const fontPath = path.join(__dirname, '../fonts', 'Roboto-Regular.ttf'); 
   if (!fs.existsSync(outputPath)) {
     fs.mkdirSync(outputPath); 
+  }
     
   const templateContent = fs.readFileSync(templatePath, "utf-8");
 

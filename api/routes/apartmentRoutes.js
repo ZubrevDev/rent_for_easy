@@ -46,7 +46,7 @@ router.post(
   "/generate-contract",
   verifyToken,
   verifyRole(["landlord", "admin"]),
-  contractController.createContract
+  contractController.generateContract
 );
 
 module.exports = router;

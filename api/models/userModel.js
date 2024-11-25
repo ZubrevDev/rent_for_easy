@@ -1,43 +1,33 @@
-// models/userModel.js
-const { DataTypes } = require("sequelize");
-const sequelize = require("../config/db");
+'use strict';
 
-// Определение модели User с использованием Sequelize
-const User = sequelize.define("user", {
-  full_name: {
-    type: DataTypes.STRING,
-    allowNull: false,
-    validate: {
-      notEmpty: true,
+module.exports = (sequelize, DataTypes) => {
+  const User = sequelize.define('User', {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
     },
-  },
-  email: {
-    type: DataTypes.STRING,
-    allowNull: false,
-    unique: true,
-    validate: {
-      isEmail: true,
+    first_name: {
+      type: DataTypes.STRING,
+      allowNull: false,
     },
-  },
-  password: {
-    type: DataTypes.STRING,
-    allowNull: false,
-    validate: {
-      len: [8, 100], // Пароль должен быть от 8 до 100 символов
+    last_name: {
+      type: DataTypes.STRING,
+      allowNull: false,
     },
-  },
-  role: {
-    type: DataTypes.ENUM("admin", "landlord", "tenant"),
-    allowNull: false,
-  },
-  phone: {
-    type: DataTypes.STRING,
-    allowNull: true,
-  },
-}, {
-  freezeTableName: true,
-  tableName: "users",
-  timestamps: true,
-});
+    email: {
+      type: DataTypes.STRING,
+      unique: true,
+      allowNull: false,
+    },
+  });
 
-module.exports = User;
+  // Ассоциации
+  User.associate = (models) => {
+    User.associate = (models) => {
+      User.hasMany(models.Apartment, { foreignKey: 'landlordId', as: 'apartments' }); // Связь с Apartment
+      User.hasMany(models.Contract, { foreignKey: 'tenant_id', as: 'contracts' });    // Связь с Contract
+    };  };
+
+  return User;
+};
