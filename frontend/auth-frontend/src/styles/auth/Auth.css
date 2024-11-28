@@ -1,0 +1,12 @@
+/* frontend/src/components/auth/Auth.css */
+.error-message {
+    color: #dc3545;
+    margin-bottom: 1rem;
+    font-size: 0.875rem;
+  }
+  
+  .form-container {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 2rem;
+  }

@@ -15,12 +15,35 @@ const {
   logoutUser
 } = require("../services/authService");
 
+// Add request validation
+const { body, validationResult } = require('express-validator');
+
+// Add validation middleware
+const registerValidation = [
+  body('email').isEmail(),
+  body('password').isLength({ min: 8 }),
+  body('name').notEmpty()
+];
+
 exports.register = async (req, res) => {
   try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    
     const user = await registerUser(req.body);
-    res.status(201).json({ message: "Пользователь зарегистрирован!", user });
+    res.status(201).json({ 
+      success: true,
+      message: "Пользователь зарегистрирован!",
+      data: { user } 
+    });
   } catch (err) {
-    res.status(err.status || 500).json({ message: err.message });
+    res.status(err.status || 500).json({
+      success: false,
+      message: err.message,
+      error: process.env.NODE_ENV === 'development' ? err.stack : undefined
+    });
   }
 };
 
