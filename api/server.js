@@ -1,57 +1,60 @@
+// server.js
 const express = require("express");
-const mysql = require("mysql2");
 const bodyParser = require("body-parser");
 const livereload = require("livereload");
 const connectLivereload = require("connect-livereload");
+const cors = require('cors');
+const db = require("./config/db");
 const authRoutes = require("./routes/authRoutes");
 const apartmentRoutes = require('./routes/apartmentRoutes');
-const userRoutesVerification = require('./routes/userRoutesVerification'); // Подключение маршрутов верификации
-const db = require("./config/db");
+const userRoutesVerification = require('./routes/userRoutesVerification');
 
 const app = express();
 
-// Middleware для обработки JSON
+// Middleware
+app.use(cors());
 app.use(bodyParser.json());
+app.use(express.urlencoded({ extended: true }));
 
-// Настройка LiveReload для автоматической перезагрузки
-const liveReloadServer = livereload.createServer();
-liveReloadServer.watch(__dirname);
-app.use(connectLivereload());
-liveReloadServer.server.once("connection", () => {
-  setTimeout(() => {
-    liveReloadServer.refresh("/");
-  }, 100);
-});
+// LiveReload setup
+if (process.env.NODE_ENV === 'development') {
+  const liveReloadServer = livereload.createServer();
+  liveReloadServer.watch(__dirname);
+  app.use(connectLivereload());
+  liveReloadServer.server.once("connection", () => {
+    setTimeout(() => {
+      liveReloadServer.refresh("/");
+    }, 100);
+  });
+}
 
-// Параметры подключения к базе данных MySQL
-const mysqlConnection = mysql.createConnection({
-  host: "127.0.0.1",
-  user: "root",
-  password: "root",
-  database: "rent_platform",
-  port: 8889,
-});
+// Database connection
+db.authenticate()
+  .then(() => {
+    console.log('Database connected successfully');
+  })
+  .catch(err => {
+    console.error('Unable to connect to the database:', err);
+  });
 
-mysqlConnection.connect((err) => {
-  if (err) {
-    console.error("Ошибка подключения к базе данных MySQL:", err);
-    return;
-  }
-  console.log("Успешное подключение к базе данных MySQL!");
-});
+// Routes
+app.use("/api/auth", authRoutes);
+app.use("/api/apartments", apartmentRoutes);
+app.use("/api/users", userRoutesVerification);
 
-// Подключение маршрутов
-app.use("/api/auth", authRoutes); // Маршруты для авторизации
-app.use("/api/apartments", apartmentRoutes); // Маршруты для квартир
-app.use("/api/users", userRoutesVerification); // Маршруты для верификации пользователей
-
-// Маршрут для проверки работы сервера
+// Base route
 app.get("/", (req, res) => {
   res.send("Сервер работает!");
 });
 
-// Запуск сервера
-const PORT = 3000;
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send('Что-то пошло не так!');
+});
+
+// Server start
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Сервер запущен на http://localhost:${PORT}`);
 });
