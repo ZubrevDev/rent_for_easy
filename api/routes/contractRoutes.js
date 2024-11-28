@@ -1,3 +1,4 @@
+// Этот файл содержит маршруты для создания и подписания договоров
 // routes/contractRoutes.js
 const express = require('express');
 const { createAndSignContract } = require('../controllers/contractController');

@@ -1,0 +1,28 @@
+
+ДОГОВОР найма жилого помещения
+
+г. {{city}}, «{{day}}» {{month}} {{year}} года
+
+Наймодатель:
+ФИО: {{landlord.fullName}}
+Паспортные данные: серия {{landlord.passportSeries}}, номер {{landlord.passportNumber}}, выдан {{landlord.passportIssuedBy}}, {{landlord.passportIssueDate}}, код подразделения: {{landlord.passportDivisionCode}}
+Адрес регистрации: {{landlord.registrationAddress}}
+Контактный телефон: {{landlord.phone}}
+E-mail: {{landlord.email}}
+
+Наниматель:
+ФИО: {{tenant.fullName}}
+Паспортные данные: {{tenant.passport}}
+Адрес регистрации: {{tenant.registrationAddress}}
+Контактный телефон: {{tenant.phone}}
+E-mail: {{tenant.email}}
+
+Условия договора:
+Ежемесячная арендная плата: {{rentalCost}} рублей.
+{{#if deposit}}
+Депозит: {{deposit}} рублей.
+{{/if}}
+{{#if lastMonthPayment}}
+Оплата за последний месяц проживания: {{lastMonthPayment}} рублей.
+{{/if}}
+Прочие условия: {{conditions}}

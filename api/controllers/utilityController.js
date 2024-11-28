@@ -1,4 +1,9 @@
-// controllers/utilityController.js
+/**
+ * Этот контроллер выполняет такие операции, связанные с коммунальными услугами, как.
+ * расчет стоимости коммунальных услуг, управление записями коммунальных услуг и
+ * предоставление данных, связанных с коммунальными услугами, другим частям приложения.
+ */
+
 const Utility = require('../models/utilityModel');
 const Apartment = require('../models/apartmentModel');
 const { Op } = require("sequelize");

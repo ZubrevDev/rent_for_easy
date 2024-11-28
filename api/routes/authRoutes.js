@@ -1,3 +1,4 @@
+// Этот файл содержит маршруты для регистрации и авторизации пользователей
 // authRoutes.js
 const express = require("express");
 const { register, login } = require("../controllers/authController");

@@ -1,3 +1,4 @@
+// Этот файл содержит маршруты для верификации пользователей
 const express = require('express');
 const router = express.Router();
 const userVerification = require('../controllers/userVerification'); // Подключаем новый контроллер

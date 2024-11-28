@@ -1,3 +1,8 @@
+// Этот файл содержит функции для создания и отправки уведомлений пользователям через различные каналы (email, SMS, push-уведомления).
+// Функция sendEmail отправляет email-уведомления с использованием nodemailer.
+// Функция sendNotification отправляет уведомления по указанному каналу (email, SMS, push).
+// Функция createNotification создает уведомление в базе данных и сразу отправляет его.
+
 // services/notificationService.js
 const Notification = require('../models/notificationModel');
 const User = require('../models/userModel');

@@ -1,3 +1,5 @@
+// Этот файл содержит модель Contract для управления контрактами
+
 module.exports = (sequelize, DataTypes) => {
   const Contract = sequelize.define(
     "Contract",

@@ -1,3 +1,5 @@
+// Этот файл содержит модель Notification для управления уведомлениями
+
 'use strict';
 
 module.exports = (sequelize, DataTypes) => {

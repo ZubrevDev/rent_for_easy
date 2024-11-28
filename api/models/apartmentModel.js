@@ -1,3 +1,5 @@
+// Этот файл содержит модель Apartment для управления квартирами
+
 'use strict';
 
 module.exports = (sequelize, DataTypes) => {
@@ -19,10 +21,9 @@ module.exports = (sequelize, DataTypes) => {
 
   // Ассоциации
   Apartment.associate = (models) => {
-    Apartment.associate = (models) => {
-      Apartment.belongsTo(models.User, { foreignKey: 'landlordId', as: 'landlord' });
-      Apartment.hasMany(models.Contract, { foreignKey: 'apartment_id', as: 'contracts' }); // Связь с Contract
-    };  };
+    Apartment.belongsTo(models.User, { foreignKey: 'landlordId', as: 'landlord' });
+    Apartment.hasMany(models.Contract, { foreignKey: 'apartment_id', as: 'contracts' }); // Связь с Contract
+  };
 
   return Apartment;
 };

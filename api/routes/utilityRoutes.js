@@ -1,3 +1,4 @@
+// Этот файл содержит маршруты для управления коммунальными платежами и показаниями счетчиков
 // routes/utilityRoutes.js
 const express = require('express');
 const { addMeterReading, updateUtility, getUtilitiesByApartment } = require('../controllers/utilityController');

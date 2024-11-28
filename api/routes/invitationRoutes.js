@@ -1,3 +1,4 @@
+// Этот файл содержит маршруты для отправки и принятия приглашений
 // routes/invitationRoutes.js
 const express = require("express");
 const { sendInvitation } = require("../controllers/invitationController");

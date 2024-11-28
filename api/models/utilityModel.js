@@ -1,3 +1,5 @@
+// Этот файл содержит модель Utility для управления коммунальными услугами
+
 'use strict';
 
 module.exports = (sequelize, DataTypes) => {

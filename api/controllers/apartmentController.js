@@ -1,3 +1,9 @@
+/**
+ * This controller manages apartment-related operations such as
+ * adding new apartments, updating apartment details, retrieving
+ * apartment information, and handling apartment availability.
+ */
+
 // apartmentController.js
 const {
   createApartment,

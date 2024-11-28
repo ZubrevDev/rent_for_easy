@@ -1,4 +1,10 @@
-// controllers/invitationController.js
+/**
+ * This controller handles the creation, sending, and management
+ * of invitations for users to join the platform. It includes
+ * functionalities for generating invitation links and tracking
+ * invitation statuses.
+ */
+
 const Invitation = require('../models/invitationModel');
 const User = require('../models/userModel');
 const Apartment = require('../models/apartmentModel');
@@ -60,7 +66,7 @@ exports.acceptInvitation = async (req, res) => {
         return res.status(403).json({ message: "Неверное приглашение." });
       }
   
-      // Создание договора после принятия приглашения
+      // Создание договора после принятия пригл��шения
       const contract = await Contract.create({
         start_date: new Date(),
         end_date: new Date(new Date().setFullYear(new Date().getFullYear() + 1)), // Срок аренды на год

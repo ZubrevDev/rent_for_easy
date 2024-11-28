@@ -1,3 +1,4 @@
+// Этот файл содержит маршруты для управления квартирами
 const express = require("express");
 const {
   createApartment,

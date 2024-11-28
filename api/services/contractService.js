@@ -1,13 +1,22 @@
+// Этот файл содержит функцию для генерации договора аренды в формате PDF на основе шаблона и данных о контракте.
+// Функция generateContract принимает данные контракта, компилирует шаблон с использованием handlebars, создает PDF-документ с кастомным шрифтом и сохраняет его на диск.
+
 const fs = require('fs');
 const path = require('path');
 const handlebars = require('handlebars');
 const { PDFDocument, rgb } = require('pdf-lib');
-const fontkit = require('fontkit'); 
+const fontkit = require('fontkit');
 
-exports.generateContract = async (contractData) => {
+const TEMPLATES = {
+  CONTRACT: 'rental/contract.hbs',
+  RETURN_ACT: 'rental/return-act.hbs',
+  TERMINATION: 'rental/termination.hbs'
+};
+
+exports.generateContract = async (contractData, templateType = TEMPLATES.CONTRACT) => {
   const { landlord, tenant, apartment, rentalCost, conditions, deposit, lastMonthPayment } = contractData;
 
-  const templatePath = path.join(__dirname, "../contract-templates", "contractTemplate.hbs");
+  const templatePath = path.join(__dirname, "../contract-templates", templateType);
   const outputPath = path.join(__dirname, '../generated-contracts'); 
   const fontPath = path.join(__dirname, '../fonts', 'Roboto-Regular.ttf'); 
   if (!fs.existsSync(outputPath)) {
@@ -70,4 +79,13 @@ exports.generateContract = async (contractData) => {
   fs.writeFileSync(filePath, pdfBytes);
 
   return filePath;
+};
+
+// New methods for different document types
+exports.generateReturnAct = async (actData) => {
+  return await this.generateContract(actData, TEMPLATES.RETURN_ACT);
+};
+
+exports.generateTermination = async (terminationData) => {
+  return await this.generateContract(terminationData, TEMPLATES.TERMINATION);
 };

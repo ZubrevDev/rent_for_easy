@@ -1,3 +1,5 @@
+// Этот файл содержит модель Invitation для управления приглашениями
+
 'use strict';
 
 module.exports = (sequelize, DataTypes) => {

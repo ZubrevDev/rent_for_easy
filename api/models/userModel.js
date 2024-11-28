@@ -1,3 +1,5 @@
+// Этот файл содержит модель User для управления пользователями
+
 'use strict';
 
 module.exports = (sequelize, DataTypes) => {

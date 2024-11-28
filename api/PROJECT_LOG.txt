@@ -1,0 +1,201 @@
+# ЖУРНАЛ ПРОЕКТА
+
+## Выполненные задачи
+- Создайте репозиторий проекта
+- Инициализация структуры проекта
+- Реализовать аутентификацию пользователей
+- Создать схему базы данных
+- Разработать конечные точки API для объявлений о продаже недвижимости
+- Реализуйте функциональность поиска по объектам недвижимости
+- Настройте конвейер непрерывной интеграции и развертывания
+
+## Задачи для тестирования
+- Поток аутентификации пользователей
+- Конечные точки API для объявлений о продаже недвижимости
+- Функциональность поиска по объектам недвижимости
+- Целостность схемы базы данных
+- Конвейер непрерывной интеграции и развертывания
+
+## Требования к минимально жизнеспособному продукту (MVP)
+- Регистрация и вход пользователей
+- Создание и управление списками недвижимости
+- Функциональность поиска недвижимости
+- Базовый пользовательский интерфейс для просмотра объектов недвижимости
+- Развертывание в производственной среде
+
+## на хуй хнает когда потом Задачи для дальнейшей реализации
+- Реализовать функциональность управления арендой (создание, обновление, удаление аренды)
+- Добавить возможность загрузки и хранения документов аренды
+- Разработать систему уведомлений для пользователей (email, SMS)
+- Интеграция с платежными системами для автоматизации оплаты аренды
+- Улучшить пользовательский интерфейс для управления недвижимостью
+- Оптимизация производительности базы данных
+- Проведение нагрузочного тестирования и оптимизация API
+- Обеспечение безопасности данных и соответствие GDPR
+
+{
+  "name": "api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "db.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "sync": "browser-sync start --proxy 'localhost:3000' --files '**/*' --port 8889"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "body-parser": "^1.20.3",
+    "express": "^4.21.1",
+    "express-validator": "^7.2.0",
+    "fontkit": "^2.0.4",
+    "handlebars": "^4.7.8",
+    "jsonwebtoken": "^9.0.2",
+    "mysql2": "^3.11.4",
+    "nodemailer": "^6.9.16",
+    "pdf-lib": "^1.17.1",
+    "sequelize": "^6.37.5",
+    "sequelize-cli": "^6.6.2"
+  },
+  "devDependencies": {
+    "connect-livereload": "^0.6.1",
+    "livereload": "^0.9.3",
+    "nodemon": "^3.1.7"
+  }
+}
+
+**база данных**
+ 
+users
+├── id (PK)
+├── password
+├── username
+├── role ('admin', 'landlord', 'tenant')
+├── phone
+├── email
+├── ... (дополнительные паспортные и личные данные)
+
+apartments
+├── id (PK)
+├── landlord_id (FK → users.id)
+├── tenant_id (FK → users.id)
+├── address
+├── apartment_number
+├── description
+├── status ('vacant', 'occupied')
+
+utilities
+├── id (PK)
+├── apartment_id (FK → apartments.id)
+├── type
+├── amount
+├── date
+
+contracts
+├── id (PK)
+├── landlord_id (FK → users.id)
+├── tenant_id (FK → users.id)
+├── apartment_id (FK → apartments.id)
+├── start_date
+├── end_date
+├── status ('Активный', 'Завершён', 'Расторгнут')
+
+apartment_photos
+├── id (PK)
+├── apartment_id (FK → apartments.id)
+├── photo_url
+
+apartment_documents
+├── id (PK)
+├── apartment_id (FK → apartments.id)
+├── document_name
+├── document_type ('PDF', 'IMAGE')
+
+cotenants
+├── id (PK)
+├── user_id (FK → users.id)
+├── full_name
+├── birth_date
+
+meters
+├── id (PK)
+├── apartment_id (FK → apartments.id)
+├── type ('Электроэнергия', 'Газ', ...)
+├── meter_number
+├── start_reading
+
+documents
+├── id (PK)
+├── user_id (FK → users.id)
+├── apartment_id (FK → apartments.id)
+├── type ('passport', 'contract', 'other')
+
+return_acts
+├── id (PK)
+├── contract_id (FK → contracts.id)
+├── return_date
+├── state
+
+inventory
+├── id (PK)
+├── apartment_id (FK → apartments.id)
+├── name
+├── quantity
+├── condition
+
+
+** FILE TREE **
+
+api
+api/config
+api/config/config.json
+api/config/db.js
+api/config/default.json
+api/config/env.js
+api/config/production.json
+api/contract-templates
+api/contract-templates/contractTemplate.hbs
+api/contracts
+api/controllers
+api/controllers/apartmentController.js
+api/controllers/authController.js
+api/controllers/contractController.js
+api/controllers/invitationController.js
+api/controllers/userVerification.js
+api/controllers/utilityController.js
+api/fonts
+api/fonts/Roboto-Regular.ttf
+api/generated-contracts
+api/middlewares
+api/middlewares/authMiddleware.js
+api/migrations
+api/migrations/20241122103055-create-contracts-table.js
+api/migrations/20241122103119-create-utilities-table.js
+api/models
+api/models/apartmentModel.js
+api/models/contractModel.js
+api/models/index.js
+api/models/invitationModel.js
+api/models/notificationModel.js
+api/models/userModel.js
+api/models/utilityModel.js
+api/node_modules
+api/routes
+api/routes/apartmentRoutes.js
+api/routes/authRoutes.js
+api/routes/contractRoutes.js
+api/routes/invitationRoutes.js
+api/routes/userRoutesVerification.js
+api/routes/utilityRoutes.js
+api/seeders
+api/services
+api/services/apartmentService.js
+api/services/authService.js
+api/services/contractService.js
+api/services/notificationService.js
+api/utils
+api/utils/logger.js

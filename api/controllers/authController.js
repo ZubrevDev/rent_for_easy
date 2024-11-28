@@ -1,3 +1,9 @@
+/**
+ * This controller handles authentication processes including
+ * user login, registration, password reset, and token management.
+ * It ensures secure access to the application by validating user credentials.
+ */
+
 // authController.js
 const { registerUser, loginUser } = require("../services/authService");
 

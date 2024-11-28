@@ -1,4 +1,5 @@
-// authMiddleware.js
+// Этот файл содержит middleware для проверки JWT токенов и ролей пользователей
+
 const jwt = require("jsonwebtoken");
 
 // Проверка JWT токена (временно отключена)
