@@ -3,6 +3,10 @@
 
 module.exports = (sequelize, DataTypes) => {
   const User = sequelize.define('User', {
+    username: {
+      type: DataTypes.STRING,
+      allowNull: true // Если вы хотите допустить пустое значение
+    },
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
