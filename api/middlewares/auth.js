@@ -1,22 +1,34 @@
-// middleware/auth.js
-const jwt = require('jsonwebtoken');
+const jwt = require("jsonwebtoken");
 
-const verifyToken = (req, res, next) => {
+/**
+ * Middleware для проверки JWT токена
+ */
+exports.verifyToken = (req, res, next) => {
+  const authHeader = req.headers["authorization"];
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return res.status(403).json({ message: "Токен отсутствует или некорректен" });
+  }
+
+  const token = authHeader.split(" ")[1];
   try {
-    const token = req.headers.authorization?.split(' ')[1];
-    
-    if (!token) {
-      return res.status(401).json({ message: 'Authorization token required' });
-    }
-
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded;
+    const decoded = jwt.verify(token, process.env.JWT_SECRET); // Убедитесь, что JWT_SECRET настроен в .env
+    req.user = decoded; // Добавляем данные пользователя в объект req
     next();
   } catch (error) {
-    return res.status(403).json({ message: 'Invalid token' });
+    console.error("Ошибка верификации токена:", error);
+    return res.status(401).json({ message: "Недействительный токен" });
   }
 };
 
-module.exports = {
-  verifyToken
+/**
+ * Middleware для проверки роли пользователя
+ * @param {string[]} roles - массив допустимых ролей
+ */
+exports.verifyRole = (roles) => {
+  return (req, res, next) => {
+    if (!req.user || !roles.includes(req.user.role)) {
+      return res.status(403).json({ message: "Доступ запрещён" });
+    }
+    next();
+  };
 };

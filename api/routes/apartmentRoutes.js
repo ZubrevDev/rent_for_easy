@@ -6,7 +6,7 @@ const {
   updateApartment,
   deleteApartment,
 } = require("../controllers/apartmentController");
-const { verifyToken, verifyRole } = require("../middlewares/authMiddleware");
+const { verifyToken, verifyRole } = require('../middlewares/auth');
 const { body } = require("express-validator");
 const contractController = require('../controllers/contractController');
 
@@ -17,10 +17,6 @@ router.post(
   "/create",
   verifyToken,
   verifyRole(["landlord", "admin"]),
-  [
-    body("address").notEmpty().withMessage("Адрес обязателен").isLength({ max: 255 }).withMessage("Адрес слишком длинный"),
-    body("description").notEmpty().withMessage("Описание обязательно").isLength({ max: 500 }).withMessage("Описание слишком длинное"),
-  ],
   createApartment
 );
 
