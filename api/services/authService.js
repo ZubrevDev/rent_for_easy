@@ -6,34 +6,43 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
-const User = require("../models/userModel");
+const { User } = require('../models');
 const Token = require("../models/tokenModel");
 const { sendVerificationEmail, sendPasswordResetEmail } = require("./emailService");
 
 // Existing functions
 exports.registerUser = async (userData) => {
-  const { email, password, full_name, role, phone } = userData;
+  const { firstName, lastName, middleName, phone, email, role, password } = userData;
+
+  console.log('userData:', userData); // Лог для проверки
+
+  if (!firstName || !lastName) {
+    throw { status: 400, message: "Имя и фамилия обязательны" };
+  }
 
   const existingUser = await User.findOne({ where: { email } });
   if (existingUser) {
     throw { status: 409, message: "Пользователь с таким email уже существует" };
   }
 
+  // Хеширование пароля
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(password, salt);
-  const verificationToken = crypto.randomBytes(32).toString("hex");
+
+  // Генерация username
+  const username = `${firstName}${lastName}${middleName || ''}`.replace(/\s+/g, '').toLowerCase();
 
   const user = await User.create({
-    email,
-    password: hashedPassword,
-    full_name,
-    role,
+    username, // Сгенерированный username
+    firstName,
+    lastName,
+    middleName,
     phone,
-    verificationToken,
-    verified: false
+    email,
+    role,
+    password: hashedPassword
   });
 
-  await sendVerificationEmail(email, verificationToken);
   return user;
 };
 

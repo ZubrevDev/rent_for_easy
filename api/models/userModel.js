@@ -8,55 +8,43 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true,
       autoIncrement: true,
     },
-    first_name: {
+    firstName: {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    last_name: {
+    lastName: {
       type: DataTypes.STRING,
       allowNull: false,
+    },
+    middleName: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    phone: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        is: /^\+?[\d\s-]+$/,
+      },
     },
     email: {
       type: DataTypes.STRING,
       unique: true,
       allowNull: false,
       validate: {
-        isEmail: true
-      }
+        isEmail: true,
+      },
+    },
+    role: {
+      type: DataTypes.ENUM('landlord', 'tenant'),
+      allowNull: false,
     },
     password: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: false, // Пароль обязателен
     },
-    role: {
-      type: DataTypes.ENUM('user', 'admin', 'landlord'),
-      defaultValue: 'user'
-    },
-    phone: {
-      type: DataTypes.STRING,
-      allowNull: true,
-      validate: {
-        is: /^\+?[\d\s-]+$/
-      }
-    },
-    verified: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false
-    },
-    verificationToken: {
-      type: DataTypes.STRING,
-      allowNull: true
-    },
-    resetPasswordToken: {
-      type: DataTypes.STRING,
-      allowNull: true
-    },
-    resetPasswordExpires: {
-      type: DataTypes.DATE,
-      allowNull: true
-    }
   }, {
-    timestamps: true
+    timestamps: true, // Для автоматического создания полей createdAt и updatedAt
   });
 
   User.associate = (models) => {
@@ -67,10 +55,6 @@ module.exports = (sequelize, DataTypes) => {
     User.hasMany(models.Contract, { 
       foreignKey: 'tenant_id', 
       as: 'contracts' 
-    });
-    User.hasMany(models.Token, {
-      foreignKey: 'userId',
-      as: 'tokens'
     });
   };
 

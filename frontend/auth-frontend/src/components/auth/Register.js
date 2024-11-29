@@ -1,4 +1,3 @@
-// src/components/auth/Register.js
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../../styles/auth/Register.css';
@@ -6,13 +5,16 @@ import '../../styles/shared/Form.css';
 
 const Register = () => {
   const navigate = useNavigate();
-  const [error, setError] = useState("");
+  const [userType, setUserType] = useState('');
   const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-    name: ""
+    email: '',
+    password: '',
+    confirmPassword: '',
+    firstName: '',
+    lastName: '',
+    middleName: '',
+    phone: '',
   });
-  const [userType, setUserType] = useState("tenant");
 
   const handleUserTypeSelect = (type) => {
     setUserType(type);
@@ -27,46 +29,50 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
+    if (formData.password !== formData.confirmPassword) {
+      alert('Пароли не совпадают');
+      return;
+    }
 
     try {
-      const response = await fetch("http://localhost:300/api/auth/register", { // Update URL
-        method: "POST",
+      const response = await fetch('http://localhost:3000/api/auth/register', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           email: formData.email,
           password: formData.password,
-          full_name: formData.name,
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          middleName: formData.middleName,
           phone: formData.phone,
-          role: userType
+          role: userType,
         })
       });
 
       const data = await response.json();
 
-      if (!response.ok) {
-        setError(data.message || "Ошибка регистрации");
-        return;
+      if (response.ok) {
+        // Перенаправление на соответствующую страницу в зависимости от роли пользователя
+        if (userType === 'landlord') {
+          navigate('/landlord-dashboard');
+        } else if (userType === 'tenant') {
+          navigate('/tenant-dashboard');
+        } else {
+          navigate('/login'); // Перенаправление на страницу логина, если роль неизвестна
+        }
+      } else {
+        alert(data.message || 'Ошибка регистрации');
       }
-
-      // Save token if returned
-      if (data.token) {
-        localStorage.setItem('token', data.token);
-      }
-
-      navigate(userType === "landlord" ? "/landlord-dashboard" : "/tenant-dashboard");
-      
-    } catch (err) {
-      setError("Ошибка сервера. Попробуйте позже.");
-      console.error("Registration error:", err);
+    } catch (error) {
+      console.error('Registration error:', error);
+      alert('Не удалось завершить регистрацию');
     }
   };
 
   return (
     <div className="register-container">
-      {error && <div className="error-message">{error}</div>}
       {!userType ? (
         <div className="user-type-selection">
           <h2>Выберите тип аккаунта</h2>
@@ -82,13 +88,56 @@ const Register = () => {
       ) : (
         <form onSubmit={handleSubmit} className="register-form">
           <h2>Регистрация как {userType === 'landlord' ? 'Арендодатель' : 'Арендатор'}</h2>
-          
+
+          <div className="form-group">
+            <input
+              type="text"
+              name="lastName"
+              placeholder="Фамилия"
+              value={formData.lastName}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <input
+              type="text"
+              name="firstName"
+              placeholder="Имя"
+              value={formData.firstName}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <input
+              type="text"
+              name="middleName"
+              placeholder="Отчество"
+              value={formData.middleName}
+              onChange={handleChange}
+            />
+          </div>
+
           <div className="form-group">
             <input
               type="email"
               name="email"
               placeholder="Email"
               value={formData.email}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <input
+              type="tel"
+              name="phone"
+              placeholder="Номер телефона"
+              value={formData.phone}
               onChange={handleChange}
               required
             />
@@ -107,21 +156,10 @@ const Register = () => {
 
           <div className="form-group">
             <input
-              type="text"
-              name="name"
-              placeholder="Полное имя"
-              value={formData.name}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
-          <div className="form-group">
-            <input
-              type="tel"
-              name="phone"
-              placeholder="Номер телефона"
-              value={formData.phone}
+              type="password"
+              name="confirmPassword"
+              placeholder="Подтвердите пароль"
+              value={formData.confirmPassword}
               onChange={handleChange}
               required
             />
